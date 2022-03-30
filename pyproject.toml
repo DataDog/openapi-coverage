@@ -1,0 +1,26 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+authors = [
+    { name = "Datadog, Inc.", email = "dev@datadoghq.com" },
+]
+classifiers = [
+  "License :: OSI Approved :: Apache-2.0 License",
+  "Programming Language :: Python :: 3",
+]
+dependencies = []
+description = "Calculate coverage of OpenAPI specifications"
+dynamic = ["version"]
+keywords = ["openapi", "coverage", "api"]
+license = {text = "Apache-2.0"}
+long_description = "file: README.md"
+name = "openapi-coverage"
+url = "https://github.com/DataDog/openapi-coverage"
+
+[project.optional-dependencies]
+tests = ["pytest"]
+
+[tool.hatch.version]
+path = "src/openapi_coverage/version.py"
