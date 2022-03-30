@@ -1,6 +1,4 @@
-import pytest
-
-from src.openapi_coverage.openapi_coverage import cover_schema
+from openapi_coverage import cover_schema
 
 def test_cover_schema():
     schema={
@@ -8,4 +6,3 @@ def test_cover_schema():
     }
     result = cover_schema(schema, "test")
     assert list(result)[0] == tuple(("", True))
-
