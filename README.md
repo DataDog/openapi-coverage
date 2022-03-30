@@ -7,7 +7,11 @@ Calculate schema coverage
 import openapi_coverage
 
 openapi_coverage.cover(schema, data)
+
+openapi_coverage.cover(schema, first) | openapi_coverage.cover(schema, second)
 ```
+
+
 
 ## Ideas
 
