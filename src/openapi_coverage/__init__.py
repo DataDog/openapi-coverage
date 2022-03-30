@@ -1,10 +1,8 @@
 """Generage OpenAPI coverage."""
 
-PRIMITIVE_TYPES=["int", "float", "boolean", "string"]
-
 PRIMITIVE_TYPES_CLASSES={
-    "int": type(1),
-    "float" : type(1.0),
+    "integer": type(1),
+    "number" : type(1.0),
     "boolean": type(True),
     "string": type("hello")
 }
@@ -17,30 +15,35 @@ def coverable_parts(schema, schema_keys=None):
 
     coverage = set()
 
-    if type_ in PRIMITIVE_TYPES:
-        coverage.add("/".join(schema_keys))
+    print(type_)
 
-    elif type_ == "object":
+    if type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
-                coverage = coverage | coverable_parts(schema["properties"][k], schema_keys + [k])
+                print(k)
+                coverage |= coverable_parts(schema["properties"][k], schema_keys + [k])
+                print(coverage)
 
         if "oneOf" in schema:
             for i, s in enumerate(schema["oneOf"]):
-                coverage = coverage | coverable_parts(s, schema_keys + [i])
+                coverage |= coverable_parts(s, schema_keys + [i])
 
         if "additionalProperties" in schema:
-            coverage = coverage | coverable_parts(schema["additionalProperties"], schema_keys + ["additionalProperties"])
+            coverage |= coverable_parts(schema["additionalProperties"], schema_keys + ["additionalProperties"])
 
     elif type_ == "array":
         if "items" in schema:
-            coverage = coverage | coverable_parts(schema["items"], schema_keys + ["items"])
+            coverage |= coverable_parts(schema["items"], schema_keys + ["items"])
 
-    else:
+    elif type_ in PRIMITIVE_TYPES_CLASSES:
+        coverage.add("/".join(schema_keys))
         # TODO cover minimum, maximum, pattern, etc.
 
         if "enum" in schema:
             coverage.add("/".join(schema_keys + ["enum"]))
+
+    else:
+        raise ValueError(f"{type_} is not supported")
 
     return coverage
 
@@ -52,7 +55,7 @@ def cover_schema(schema, data, schema_keys=None):
 
     coverage = set()
 
-    if type_ in PRIMITIVE_TYPES:
+    if type_ in PRIMITIVE_TYPES_CLASSES:
         coverage.add(("/".join(schema_keys), type(data) == PRIMITIVE_TYPES_CLASSES[type_]))
 
     elif type_ == "object":

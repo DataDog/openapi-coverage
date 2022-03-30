@@ -20,5 +20,5 @@ def test_coverable_parts():
             }
         }
     }
-    result = list(coverable_parts(schema))
-    assert result == ["/a", "/b"]
+    result = coverable_parts(schema)
+    assert result == {"a", "b"}
