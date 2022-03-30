@@ -15,10 +15,10 @@ jobs:
             - name: Install Python
               uses: actions/setup-python@v2
               with:
-                  python-version: 3.8
+                  python-version: 3.9
 
             - name: Install pytest
-              run: pip install pytest==6.2.4
+              run: pip install -e .[tests]
 
             - name: Run Unit Tests
               run: pytest -vv
