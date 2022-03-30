@@ -1,0 +1,24 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Install Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.9
+
+            - name: Install pytest
+              run: pip install -e .[tests]
+
+            - name: Run Unit Tests
+              run: pytest -vv
