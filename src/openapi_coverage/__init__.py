@@ -15,8 +15,6 @@ def coverable_parts(schema, schema_keys=None):
 
     coverage = set()
 
-    print(type_)
-
     if type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
@@ -75,8 +73,6 @@ def cover_schema(schema, data, schema_keys=None):
             for k in data:
                 if k not in schema.get("properties", {}):
                     coverage = coverage | cover_schema(schema["additionalProperties"], data[k], schema_keys + [k])
-
-
 
     elif type_ == "array":
         if "items" in schema:
