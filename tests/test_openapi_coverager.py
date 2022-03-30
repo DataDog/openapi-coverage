@@ -1,11 +1,24 @@
-import pytest
-
-from src.openapi_coverage.openapi_coverage import cover_schema
+from openapi_coverage import cover_schema, coverable_parts
 
 def test_cover_schema():
     schema={
         "type": "string"
     }
-    result = cover_schema(schema, "test")
-    assert list(result)[0] == tuple(("", True))
+    result = list(cover_schema(schema, "test"))
+    assert result[0] == tuple(("", True))
 
+
+def test_coverable_parts():
+    schema={
+        "type": "object",
+        "properties": {
+            "a": {
+                "type": "string"
+            },
+            "b": {
+                "type": "integer"
+            }
+        }
+    }
+    result = coverable_parts(schema)
+    assert result == {"a", "b"}
