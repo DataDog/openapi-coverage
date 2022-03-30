@@ -1,6 +1,6 @@
 import pytest
 
-from openapi_coverage.openapi_coverage import cover_schema
+from src.openapi_coverage.openapi_coverage import cover_schema
 
 def test_cover_schema():
     schema={
