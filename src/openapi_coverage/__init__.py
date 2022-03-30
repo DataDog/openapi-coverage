@@ -10,6 +10,41 @@ PRIMITIVE_TYPES_CLASSES={
 }
 
 
+def coverable_parts(schema, schema_keys=None):
+    """Return schema parts that should be tested."""
+    schema_keys = schema_keys or []
+    type_ = schema.get("type", "object")
+
+    coverage = set()
+
+    if type_ in PRIMITIVE_TYPES:
+        coverage.add("/".join(schema_keys))
+
+    elif type_ == "object":
+        if "properties" in schema:
+            for k in schema["properties"]:
+                coverage = coverage | coverable_parts(schema["properties"][k], schema_keys + [k])
+
+        if "oneOf" in schema:
+            for i, s in enumerate(schema["oneOf"]):
+                coverage = coverage | coverable_parts(s, schema_keys + [i])
+
+        if "additionalProperties" in schema:
+            coverage = coverage | coverable_parts(schema["additionalProperties"], schema_keys + ["additionalProperties"])
+
+    elif type_ == "array":
+        if "items" in schema:
+            coverage = coverage | coverable_parts(schema["items"], schema_keys + ["items"])
+
+    else:
+        # TODO cover minimum, maximum, pattern, etc.
+
+        if "enum" in schema:
+            coverage.add("/".join(schema_keys + ["enum"]))
+
+    return coverage
+
+
 def cover_schema(schema, data, schema_keys=None):
     """Cover the schema with the data."""
     schema_keys = schema_keys or []
