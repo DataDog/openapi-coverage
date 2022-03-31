@@ -18,13 +18,11 @@ def coverable_parts(schema, schema_keys=None):
     if type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
-                print(k)
                 coverage |= coverable_parts(schema["properties"][k], schema_keys + [k])
-                print(coverage)
 
         if "oneOf" in schema:
             for i, s in enumerate(schema["oneOf"]):
-                coverage |= coverable_parts(s, schema_keys + [i])
+                coverage |= coverable_parts(s, schema_keys + ["oneOf", i])
 
         if "additionalProperties" in schema:
             coverage |= coverable_parts(schema["additionalProperties"], schema_keys + ["additionalProperties"])
@@ -66,19 +64,19 @@ def cover_schema(schema, data, schema_keys=None):
         if "oneOf" in schema:
             for i, s in enumerate(schema["oneOf"]):
                 try:
-                    coverage |= cover_schema(s, data, schema_keys + [i])
+                    coverage |= cover_schema(s, data, schema_keys + ["oneOf", i])
                 except ValueError:
                     pass
 
         if "additionalProperties" in schema:
             for k in data:
                 if k not in schema.get("properties", {}):
-                    coverage |= cover_schema(schema["additionalProperties"], data[k], schema_keys + [k])
+                    coverage |= cover_schema(schema["additionalProperties"], data[k], schema_keys + ["additionalProperties"])
 
     elif type_ == "array":
         if "items" in schema:
             for i, d in enumerate(data):
-                coverage |= cover_schema(schema["items"], d, schema_keys + [i])
+                coverage |= cover_schema(schema["items"], d, schema_keys + ["items"])
 
     else:
         # TODO cover minimum, maximum, pattern, etc.
