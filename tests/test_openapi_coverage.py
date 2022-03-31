@@ -1,4 +1,4 @@
-from openapi_coverage import cover_schema, coverable_parts
+from openapi_coverage import cover_schema, coverable_parts, build_url_map
 
 
 def test_cover_schema_primitive_types():
@@ -75,3 +75,13 @@ def test_schemas(load_yaml, load_json, dereference):
 
     result = cover_schema(schema["components"]["schemas"]["Dog"], dog)
     assert result == {("allOf", 0, "pet_type"), ("allOf", 1, "bark")}
+
+
+def test_url_map(load_yaml, dereference):
+    schema = dereference(load_yaml("schemas/petstore.yaml"))
+    url_map = build_url_map(schema)
+    map_adapter = url_map.bind("http://localhost:8080")
+
+    assert map_adapter.match("/pets", "GET") == (("paths", "/pets", "get"), {})
+    assert map_adapter.match("/pets", "POST") == (("paths", "/pets", "post"), {})
+    assert map_adapter.match("/pets/42", "GET") == (("paths", "/pets/{petId}", "get"), {"petId": "42"})
