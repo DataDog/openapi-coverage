@@ -20,7 +20,7 @@ name = "openapi-coverage"
 url = "https://github.com/DataDog/openapi-coverage"
 
 [project.optional-dependencies]
-tests = ["pytest", "pytest-black"]
+tests = ["pytest", "pytest-black", "jsonref==0.2", "PyYAML"]
 
 [tool.hatch.version]
 path = "src/openapi_coverage/version.py"
