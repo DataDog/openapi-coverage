@@ -1,67 +1,45 @@
 from openapi_coverage import cover_schema, coverable_parts
 
+
 def test_cover_schema_primitive_types():
-    schema={
-        "type": "string"
-    }
+    schema = {"type": "string"}
     result = list(cover_schema(schema, "test"))
-    assert result[0] == ""
+    assert result[0] == tuple()
     result = list(cover_schema(schema, 1))
     assert result == []
 
-    schema={
-        "type": "integer"
-    }
+    schema = {"type": "integer"}
     result = list(cover_schema(schema, 1))
-    assert result[0] == ""
+    assert result[0] == tuple()
     result = list(cover_schema(schema, "1"))
     assert result == []
 
-    schema={
-        "type": "number"
-    }
+    schema = {"type": "number"}
     result = list(cover_schema(schema, 1.0))
-    assert result[0] == ""
+    assert result[0] == tuple()
     result = list(cover_schema(schema, "1.0"))
     assert result == []
 
-    schema={
-        "type": "boolean"
-    }
+    schema = {"type": "boolean"}
     result = list(cover_schema(schema, True))
-    assert result[0] == ""
+    assert result[0] == tuple()
     result = list(cover_schema(schema, "True"))
     assert result == []
 
 
 def test_coverable_parts():
-    schema={
+    schema = {
         "type": "object",
-        "properties": {
-            "a": {
-                "type": "string"
-            },
-            "b": {
-                "type": "integer"
-            }
-        }
+        "properties": {"a": {"type": "string"}, "b": {"type": "integer"}},
     }
     result = coverable_parts(schema)
-    assert result == {"a", "b"}
+    assert result == {("a",), ("b",)}
 
 def test_cover_all():
     schema={
         "type": "object",
-        "properties": {
-            "a": {
-                "type": "string"
-            },
-            "b": {
-                "type": "integer"
-            }
-        }
+        "properties": {"a": {"type": "string"}, "b": {"type": "integer"}},
     }
-
     data={
         "a": "hello",
         "b": 85
@@ -77,14 +55,7 @@ def test_cover_all():
 def test_partial_cover():
     schema={
         "type": "object",
-        "properties": {
-            "a": {
-                "type": "string"
-            },
-            "b": {
-                "type": "integer"
-            }
-        }
+        "properties": {"a": {"type": "string"}, "b": {"type": "integer"}},
     }
 
     data={
@@ -97,3 +68,10 @@ def test_partial_cover():
     coverage_percentage = len(total & actual)/len(total)
 
     assert coverage_percentage == 0.5
+
+def test_schemas(load_yaml, load_json, dereference):
+    schema = dereference(load_yaml("schemas/allOf.yaml"))
+    dog = load_json("data/allOf/valid/dog.json")
+
+    result = cover_schema(schema["components"]["schemas"]["Dog"], dog)
+    assert result == {("allOf", 0, "pet_type"), ("allOf", 1, "bark")}
