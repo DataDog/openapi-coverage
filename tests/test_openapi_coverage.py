@@ -1,4 +1,5 @@
-from openapi_coverage import cover_schema, coverable_parts, build_url_map
+from openapi_coverage.schemas import cover_schema, coverable_parts
+from openapi_coverage.paths import build_url_map
 
 
 def test_cover_schema_primitive_types():
