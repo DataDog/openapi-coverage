@@ -84,7 +84,7 @@ def cover_schema(schema, data, schema_keys=None):
             for i, s in enumerate(schema["allOf"]):
                 coverage |= cover_schema(s, data, schema_keys + ["allOf", i])
 
-        if "additionalProperties" in schema:
+        if "additionalProperties" in schema and data is not None:
             for k in data:
                 if k not in schema.get("properties", {}):
                     coverage |= cover_schema(
