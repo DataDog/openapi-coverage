@@ -64,7 +64,7 @@ def cover_schema(schema, data, schema_keys=None):
     elif type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
-                if k in data:
+                if data and k in data:
                     coverage |= cover_schema(
                         schema["properties"][k], data[k], schema_keys + [k]
                     )
@@ -73,7 +73,7 @@ def cover_schema(schema, data, schema_keys=None):
             for i, s in enumerate(schema["oneOf"]):
                 try:
                     coverage |= cover_schema(s, data, schema_keys + ["oneOf", i])
-                except ValueError:
+                except (ValueError, TypeError):
                     pass
 
         if "allOf" in schema:
@@ -91,8 +91,9 @@ def cover_schema(schema, data, schema_keys=None):
 
     elif type_ == "array":
         if "items" in schema:
-            for i, d in enumerate(data):
-                coverage |= cover_schema(schema["items"], d, schema_keys + ["items"])
+            if data:
+                for i, d in enumerate(data):
+                    coverage |= cover_schema(schema["items"], d, schema_keys + ["items"])
 
     else:
         # TODO cover minimum, maximum, pattern, etc.

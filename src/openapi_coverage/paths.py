@@ -12,7 +12,6 @@ def build_url_map(schema):
                 path.replace("{", "<").replace("}", ">"),
                 methods=[method.upper()],
                 endpoint=("paths", path, method),
-                # endpoint=operation,
             ))
             # TODO handle servers
 
