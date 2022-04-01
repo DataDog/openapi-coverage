@@ -37,4 +37,5 @@ for operation in sorted({p[:3] for p in coverable}):
         r = 0
     print(f"{r:>6.2f}% - {operation[1:]}")
 
-print(len(coverred)/len(coverable))
+total_coverage = 100.0 * len(coverred)/len(coverable)
+print(f"Total coverage: {total_coverage:.2f}%")
