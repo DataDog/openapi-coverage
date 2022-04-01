@@ -10,7 +10,6 @@ class TrieNode:
 class Trie:
     def __init__(self):
         self.root = TrieNode("root", None)
-        self.empty = True
 
     def insert(self, path):
         current = self.root
