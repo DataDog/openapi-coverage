@@ -6,4 +6,7 @@ def lookup(schema, path):
     if not path:
         return schema
     else:
-        return lookup(schema[path[0]], path[1:])
+        try:
+            return lookup(schema[path[0]], path[1:])
+        except KeyError:
+            raise RuntimeError(f"Unable to find {path[0]!r} in {schema.keys()}")
