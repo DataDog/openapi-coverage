@@ -1,5 +1,5 @@
 from openapi_coverage.schemas import cover_schema, coverable_parts
-from openapi_coverage.paths import build_url_map
+from openapi_coverage.paths import build_url_map, coverable_paths
 from openapi_coverage.refs import replace_refs
 
 
@@ -121,3 +121,7 @@ def test_replace_refs(load_yaml, dereference):
         ("components", "schemas", "Dog", "allOf", 1, "properties", "breed"),
         ("components", "schemas", "Pet", "properties", "pet_type"),  # from allOf $ref
     }
+
+def test_coverable_paths(load_yaml, dereference):
+    schema = dereference(load_yaml("schemas/petstore.yaml"))
+    assert coverable_paths(schema) == {('limit',), ('petId',)}
