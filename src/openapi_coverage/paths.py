@@ -2,6 +2,8 @@
 
 from werkzeug.routing import Map, Rule
 
+from openapi_coverage.schemas import coverable_parts
+
 
 def build_url_map(schema):
     """Build a map of URL to schema."""
@@ -20,18 +22,31 @@ def build_url_map(schema):
     return Map(rules)
 
 
-from openapi_coverage.schemas import coverable_parts
-
-
-def coverable_paths(schema, schema_keys=None):
+def coverable_paths(schema):
     """Return schema parts that should be tested."""
-
     coverage = set()
 
     for path, operations in schema.get("paths", {}).items():
         for method, operation in operations.items():
-            if "parameters" in operation:
-                for param in operation["parameters"]:
-                    coverage |= coverable_parts(param["schema"], [param["name"]])
+            prefix = ["paths", path, method]
+            for i, parameter in enumerate(operation.get("parameters", [])):
+                coverage |= coverable_parts(
+                    parameter["schema"],
+                    schema_keys=prefix + ["parameters", i, "schema"],
+                )
+
+            if "requestBody" in operation and "content" in operation["requestBody"]:
+                for content_type, body in operation["requestBody"]["content"].items():
+                    coverage |= coverable_parts(
+                        body["schema"],
+                        schema_keys=prefix + ["requestBody", "content", content_type, "schema"],
+                    )
+
+            for status_code, response in operation.get("responses", {}).items():
+                for content_type, content in response.get("content", {}).items():
+                    coverage |= coverable_parts(
+                        content["schema"],
+                        schema_keys=prefix + ["responses", status_code, "content", content_type, "schema"],
+                    )
 
     return coverage
