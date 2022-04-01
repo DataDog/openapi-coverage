@@ -12,6 +12,7 @@ def load_yaml():
     def loader(path):
         with (Path(__file__).parent / path).open("r") as f:
             return yaml.load(f, Loader=CSafeLoader)
+
     return loader
 
 
@@ -20,6 +21,7 @@ def load_json():
     def loader(path):
         with (Path(__file__).parent / path).open("r") as f:
             return json.load(f)
+
     return loader
 
 
@@ -27,4 +29,5 @@ def load_json():
 def dereference():
     def loader(schema):
         return JsonRef.replace_refs(schema)
+
     return loader

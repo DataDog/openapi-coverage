@@ -18,7 +18,9 @@ def coverable_parts(schema, schema_keys=None):
     if type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
-                coverage |= coverable_parts(schema["properties"][k], schema_keys + ["properties", k])
+                coverage |= coverable_parts(
+                    schema["properties"][k], schema_keys + ["properties", k]
+                )
 
         if "oneOf" in schema:
             for i, s in enumerate(schema["oneOf"]):
@@ -66,7 +68,9 @@ def cover_schema(schema, data, schema_keys=None):
             for k in schema["properties"]:
                 if data and k in data:
                     coverage |= cover_schema(
-                        schema["properties"][k], data[k], schema_keys + ["properties", k]
+                        schema["properties"][k],
+                        data[k],
+                        schema_keys + ["properties", k],
                     )
 
         if "oneOf" in schema:
@@ -93,7 +97,9 @@ def cover_schema(schema, data, schema_keys=None):
         if "items" in schema:
             if data:
                 for i, d in enumerate(data):
-                    coverage |= cover_schema(schema["items"], d, schema_keys + ["items"])
+                    coverage |= cover_schema(
+                        schema["items"], d, schema_keys + ["items"]
+                    )
 
     else:
         # TODO cover minimum, maximum, pattern, etc.
@@ -103,5 +109,3 @@ def cover_schema(schema, data, schema_keys=None):
                 raise ValueError(f"{data} is not in {schema['enum']}")
 
     return coverage
-
-

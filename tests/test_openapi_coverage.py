@@ -35,7 +35,16 @@ def test_coverable_parts():
         "properties": {"a": {"type": "string"}, "b": {"type": "integer"}},
     }
     result = coverable_parts(schema)
-    assert result == {("a",), ("b",)}
+    assert result == {
+        (
+            "properties",
+            "a",
+        ),
+        (
+            "properties",
+            "b",
+        ),
+    }
 
 
 def test_cover_all():
@@ -72,7 +81,10 @@ def test_schemas(load_yaml, load_json, dereference):
     dog = load_json("data/allOf/valid/dog.json")
 
     result = cover_schema(schema["components"]["schemas"]["Dog"], dog)
-    assert result == {("allOf", 0, "pet_type"), ("allOf", 1, "bark")}
+    assert result == {
+        ("allOf", 0, "properties", "pet_type"),
+        ("allOf", 1, "properties", "bark"),
+    }
 
 
 def test_url_map(load_yaml, dereference):

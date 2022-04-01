@@ -8,11 +8,13 @@ def build_url_map(schema):
     rules = []
     for path, operations in schema.get("paths", {}).items():
         for method, operation in operations.items():
-            rules.append(Rule(
-                path.replace("{", "<").replace("}", ">"),
-                methods=[method.upper()],
-                endpoint=("paths", path, method),
-            ))
+            rules.append(
+                Rule(
+                    path.replace("{", "<").replace("}", ">"),
+                    methods=[method.upper()],
+                    endpoint=("paths", path, method),
+                )
+            )
             # TODO handle servers
 
     return Map(rules)

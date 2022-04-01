@@ -1,5 +1,6 @@
 """Rewrite paths using JSON-refs."""
 
+
 def replace_refs(schema, path):
     """Replace JSON-refs in the schema."""
     ref_index = 0
