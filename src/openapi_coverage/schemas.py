@@ -18,7 +18,7 @@ def coverable_parts(schema, schema_keys=None):
     if type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
-                coverage |= coverable_parts(schema["properties"][k], schema_keys + [k])
+                coverage |= coverable_parts(schema["properties"][k], schema_keys + ["properties", k])
 
         if "oneOf" in schema:
             for i, s in enumerate(schema["oneOf"]):
@@ -66,7 +66,7 @@ def cover_schema(schema, data, schema_keys=None):
             for k in schema["properties"]:
                 if data and k in data:
                     coverage |= cover_schema(
-                        schema["properties"][k], data[k], schema_keys + [k]
+                        schema["properties"][k], data[k], schema_keys + ["properties", k]
                     )
 
         if "oneOf" in schema:
