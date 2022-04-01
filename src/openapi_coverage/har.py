@@ -14,10 +14,7 @@ def load_har(path):
 
 
 def _build_header_map(headers):
-    return {
-        header["name"]: header["value"]
-        for header in headers
-    }
+    return {header["name"]: header["value"] for header in headers}
 
 
 def cover_har(schema, har, url_map=None):
@@ -30,14 +27,21 @@ def cover_har(schema, har, url_map=None):
         method = entry["request"]["method"]
 
         parsed_url = urlparse(url)
-        parts, path_parameters = url_map.bind(parsed_url.hostname).match(parsed_url.path, method=method)
+        parts, path_parameters = url_map.bind(parsed_url.hostname).match(
+            parsed_url.path, method=method
+        )
 
         # TODO cover path, query, and headers
 
         operation = lookup(schema, parts)
 
         if "requestBody" in operation:
-            prefix = ["requestBody", "content", entry["request"]["postData"]["mimeType"], "schema"]
+            prefix = [
+                "requestBody",
+                "content",
+                entry["request"]["postData"]["mimeType"],
+                "schema",
+            ]
             data_schema = lookup(operation, prefix)
             try:
                 data = json.loads(entry["request"]["postData"]["text"])

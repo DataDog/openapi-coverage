@@ -1,5 +1,6 @@
 """Use path parts to get a right part of the schema."""
 
+
 def lookup(schema, path):
     """Use path parts to get a right part of the schema."""
     if not path:
