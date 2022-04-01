@@ -6,13 +6,16 @@ Calculate schema coverage
 ```python
 import openapi_coverage
 
-openapi_coverage.cover(schema, data)
+openapi_coverage.cover_schema(schema, data)
 
-openapi_coverage.cover(schema, first) | openapi_coverage.cover(schema, second)
+openapi_coverage.cover_schema(schema, first) | openapi_coverage.cover_schema(schema, second)
 ```
 
+Calculate coverage of schema based on HAR recording:
 
-
+```console
+$ python -m openapi_coverage openapi.yaml cassettes/*/*.har
+```
 ## Ideas
 
 - [ ] prepare fixtures and petstore coverage example
