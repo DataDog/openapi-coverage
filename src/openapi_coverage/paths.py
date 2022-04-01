@@ -22,6 +22,7 @@ def build_url_map(schema):
 
 from openapi_coverage.schemas import coverable_parts
 
+
 def coverable_paths(schema, schema_keys=None):
     """Return schema parts that should be tested."""
 
@@ -32,7 +33,5 @@ def coverable_paths(schema, schema_keys=None):
             if "parameters" in operation:
                 for param in operation["parameters"]:
                     coverage |= coverable_parts(param["schema"], [param["name"]])
-                    # import pdb; pdb.set_trace()
-            # TODO handle servers
 
     return coverage

@@ -122,6 +122,7 @@ def test_replace_refs(load_yaml, dereference):
         ("components", "schemas", "Pet", "properties", "pet_type"),  # from allOf $ref
     }
 
+
 def test_coverable_paths(load_yaml, dereference):
     schema = dereference(load_yaml("schemas/petstore.yaml"))
-    assert coverable_paths(schema) == {('limit',), ('petId',)}
+    assert coverable_paths(schema) == {("limit",), ("petId",)}
