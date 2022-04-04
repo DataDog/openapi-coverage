@@ -21,3 +21,5 @@ $ python -m openapi_coverage openapi.yaml cassettes/*/*.har
 - [ ] prepare fixtures and petstore coverage example
 - [ ] instrument `httplib` to automatically calculate coverage for HTTP traffic
 - [ ] generate coverage reports (lcov, ...)
+- [ ] count coverage for each enum value
+- [ ] count coverage for nullable fields
