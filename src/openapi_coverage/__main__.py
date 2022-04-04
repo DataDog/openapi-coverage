@@ -88,7 +88,7 @@ def annotate(schema_paths, report):
 
     for schema_path in schema_paths:
         with open(schema_path) as f:
-            schema = JsonRef.replace_refs(PositionLoader(f.read()).get_single_data())
+            schema = PositionLoader(f.read()).get_single_data()
 
         for missing in missing_paths:
             key = (
