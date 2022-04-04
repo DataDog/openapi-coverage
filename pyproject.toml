@@ -10,7 +10,7 @@ classifiers = [
   "License :: OSI Approved :: Apache-2.0 License",
   "Programming Language :: Python :: 3",
 ]
-dependencies = ["werkzeug"]
+dependencies = ["click", "ruamel.yaml", "werkzeug"]
 description = "Calculate coverage of OpenAPI specifications"
 dynamic = ["version"]
 keywords = ["openapi", "coverage", "api"]
@@ -20,7 +20,7 @@ name = "openapi-coverage"
 url = "https://github.com/DataDog/openapi-coverage"
 
 [project.optional-dependencies]
-tests = ["pytest", "pytest-black", "jsonref==0.2", "PyYAML"]
+tests = ["pytest", "pytest-black", "jsonref==0.2"]
 
 [tool.hatch.version]
 path = "src/openapi_coverage/version.py"

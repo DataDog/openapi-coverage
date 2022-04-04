@@ -24,6 +24,7 @@ def build_url_map(schema):
 
 def coverable_paths(schema):
     """Return schema parts that should be tested."""
+    refs = set()
     coverage = set()
 
     for path, operations in schema.get("paths", {}).items():
@@ -33,6 +34,7 @@ def coverable_paths(schema):
                 coverage |= coverable_parts(
                     parameter["schema"],
                     schema_keys=prefix + ["parameters", i, "schema"],
+                    refs=refs,
                 )
 
             if "requestBody" in operation and "content" in operation["requestBody"]:
@@ -40,6 +42,7 @@ def coverable_paths(schema):
                     coverage |= coverable_parts(
                         body["schema"],
                         schema_keys=prefix + ["requestBody", "content", content_type, "schema"],
+                        refs=refs,
                     )
 
             for status_code, response in operation.get("responses", {}).items():
@@ -47,6 +50,7 @@ def coverable_paths(schema):
                     coverage |= coverable_parts(
                         content["schema"],
                         schema_keys=prefix + ["responses", status_code, "content", content_type, "schema"],
+                        refs=refs,
                     )
 
     return coverage
