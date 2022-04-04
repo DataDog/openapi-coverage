@@ -19,6 +19,11 @@ def replace_refs(schema, path):
 
         schema = schema[part]
 
+    ref = get_ref(schema)
+    if ref is not None:
+        ref_index = len(path)
+        prefix = ref.split("/")[1:]
+
     if prefix is not None:
         return (*prefix, *path[ref_index:])
     return path

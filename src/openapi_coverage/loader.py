@@ -1,125 +1,51 @@
 """Load YAML file."""
 
-import ruamel
-from ruamel.yaml import YAML
+from yaml.composer import Composer
+from yaml.constructor import Constructor
+from yaml.nodes import ScalarNode
+from yaml.resolver import BaseResolver
+from yaml import Loader
 
 
-class Str(ruamel.yaml.scalarstring.ScalarString):
-    __slots__ = "lc"
+class PositionLoader(Loader):
+    """Load YAML file."""
 
-    style = ""
+    def __init__(self, stream):
+        super().__init__(stream)
 
-    def __new__(cls, value):
-        return ruamel.yaml.scalarstring.ScalarString.__new__(cls, value)
+    def compose_node(self, parent, index):
+        line = self.line
+        column = self.column
+        node = super().compose_node(parent, index)
+        node.__position__ = {"line": line, "column": column}
+        return node
 
+    def construct_mapping(self, node, deep=False):
+        node_pair_lst = node.value
+        node_pair_lst_for_appending = []
 
-class MyPreservedScalarString(ruamel.yaml.scalarstring.PreservedScalarString):
-    __slots__ = "lc"
-
-
-class MyDoubleQuotedScalarString(ruamel.yaml.scalarstring.DoubleQuotedScalarString):
-    __slots__ = "lc"
-
-
-class MySingleQuotedScalarString(ruamel.yaml.scalarstring.SingleQuotedScalarString):
-    __slots__ = "lc"
-
-
-class LCBoolean(ruamel.yaml.scalarbool.ScalarBoolean):
-    lc = None
-
-
-class LCInt(ruamel.yaml.scalarint.ScalarInt):
-    lc = None
-
-
-class LCFloat(ruamel.yaml.scalarfloat.ScalarFloat):
-    lc = None
-
-
-class LCConstructor(ruamel.yaml.constructor.RoundTripConstructor):
-    def construct_scalar(self, node):
-        # type: (Any) -> Any
-        if not isinstance(node, ruamel.yaml.nodes.ScalarNode):
-            raise ruamel.yaml.constructor.ConstructorError(
-                None,
-                None,
-                "expected a scalar node, but found %s" % node.id,
-                node.start_mark,
+        for key_node, value_node in node_pair_lst:
+            shadow_key_node = ScalarNode(
+                tag=BaseResolver.DEFAULT_SCALAR_TAG,
+                value="__position__" + key_node.value,
             )
+            shadow_value_node = ScalarNode(
+                tag=BaseResolver.DEFAULT_SCALAR_TAG, value=key_node.__position__
+            )
+            node_pair_lst_for_appending.append((shadow_key_node, shadow_value_node))
 
-        if node.style == "|" and isinstance(node.value, ruamel.yaml.compat.text_type):
-            ret_val = MyPreservedScalarString(node.value)
-        elif bool(self._preserve_quotes) and isinstance(
-            node.value, ruamel.yaml.compat.text_type
-        ):
-            if node.style == "'":
-                ret_val = MySingleQuotedScalarString(node.value)
-            elif node.style == '"':
-                ret_val = MyDoubleQuotedScalarString(node.value)
-            else:
-                ret_val = Str(node.value)
-        else:
-            ret_val = Str(node.value)
-        ret_val.lc = ruamel.yaml.comments.LineCol()
-        ret_val.lc.line = node.start_mark.line
-        ret_val.lc.col = node.start_mark.column
-        return ret_val
+        node.value = node_pair_lst + node_pair_lst_for_appending
+        mapping = Constructor.construct_mapping(self, node, deep=deep)
+        return mapping
 
-    def construct_yaml_float(self, node):
-        # type: (Any) -> Any
-        b = super(LCConstructor, self).construct_yaml_float(node)
-        if node.anchor:
-            ret_val = LCFloat(b, anchor=node.anchor)
-        else:
-            ret_val = LCFloat(b)
-        ret_val.lc = ruamel.yaml.comments.LineCol()
-        ret_val.lc.line = node.start_mark.line
-        ret_val.lc.col = node.start_mark.column
-        return ret_val
-
-    # def construct_yaml_seq(self, node):
-
-    # def construct_yaml_map(self, node):
-
-    def construct_yaml_int(self, node):
-        # type: (Any) -> Any
-        b = super(LCConstructor, self).construct_yaml_int(node)
-        if node.anchor:
-            ret_val = LCInt(b, anchor=node.anchor)
-        else:
-            ret_val = LCInt(b)
-        ret_val.lc = ruamel.yaml.comments.LineCol()
-        ret_val.lc.line = node.start_mark.line
-        ret_val.lc.col = node.start_mark.column
-        return ret_val
-
-    def construct_yaml_bool(self, node):
-        # type: (Any) -> Any
-        b = super(LCConstructor, self).construct_yaml_bool(node)
-        import ipdb; ipdb.set_trace()
-        if node.anchor:
-            ret_val = LCBoolean(b, anchor=node.anchor)
-        else:
-            ret_val = LCBoolean(b)
-        ret_val.lc = ruamel.yaml.comments.LineCol()
-        ret_val.lc.line = node.start_mark.line
-        ret_val.lc.col = node.start_mark.column
-        return ret_val
-
-
-LCConstructor.add_constructor(
-    'tag:yaml.org,2002:bool', LCConstructor.construct_yaml_bool
-)
-
-LCConstructor.add_constructor(
-    'tag:yaml.org,2002:int', LCConstructor.construct_yaml_int
-)
-
-LCConstructor.add_constructor(
-    'tag:yaml.org,2002:float', LCConstructor.construct_yaml_float
-)
-
-
-yaml = YAML()
-yaml.Constructor = LCConstructor
+    def construct_sequence(self, node, deep=False):
+        values = []
+        for value in node.value:
+            values.append(value)
+            values.append(
+                ScalarNode(
+                    tag=BaseResolver.DEFAULT_SCALAR_TAG, value=value.__position__
+                )
+            )
+        node.value = values
+        return Constructor.construct_sequence(self, node, deep=deep)

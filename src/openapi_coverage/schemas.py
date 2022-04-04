@@ -20,7 +20,8 @@ def coverable_parts(schema, schema_keys=None, refs=None):
         ref = get_ref(schema)
         if ref is not None:
             if ref in refs:
-                return {tuple(schema_keys)}
+                return coverage
+                # return {tuple(schema_keys)}
             refs.add(ref)
 
     schema_keys = schema_keys or []
