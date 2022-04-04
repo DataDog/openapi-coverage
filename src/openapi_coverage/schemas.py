@@ -1,5 +1,8 @@
 """Calculate coverage for schemas."""
 
+from __future__ import nested_scopes
+from .refs import get_ref
+
 PRIMITIVE_TYPES_CLASSES = {
     "integer": type(1),
     "number": type(1.0),
@@ -8,43 +11,77 @@ PRIMITIVE_TYPES_CLASSES = {
 }
 
 
-def coverable_parts(schema, schema_keys=None):
+def coverable_parts(schema, schema_keys=None, refs=None):
     """Return schema parts that should be tested."""
+    coverage = set()
+
+    # avoid infinite recursion
+    if refs is not None:
+        ref = get_ref(schema)
+        if ref is not None:
+            if ref in refs:
+                return coverage
+                # return {tuple(schema_keys)}
+            refs.add(ref)
+
     schema_keys = schema_keys or []
     type_ = schema.get("type", "object")
-
-    coverage = set()
 
     if type_ == "object":
         if "properties" in schema:
             for k in schema["properties"]:
                 coverage |= coverable_parts(
-                    schema["properties"][k], schema_keys + ["properties", k]
+                    schema["properties"][k],
+                    schema_keys=schema_keys + ["properties", k],
+                    refs=refs,
                 )
 
         if "oneOf" in schema:
             for i, s in enumerate(schema["oneOf"]):
-                coverage |= coverable_parts(s, schema_keys + ["oneOf", i])
+                coverage |= coverable_parts(
+                    s,
+                    schema_keys=schema_keys + ["oneOf", i],
+                    refs=refs,
+                )
 
         if "allOf" in schema:
             for i, s in enumerate(schema["allOf"]):
-                coverage |= coverable_parts(s, schema_keys + ["allOf", i])
+                coverage |= coverable_parts(
+                    s,
+                    schema_keys=schema_keys + ["allOf", i],
+                    refs=refs,
+                )
 
         if "additionalProperties" in schema:
-            coverage |= coverable_parts(
-                schema["additionalProperties"], schema_keys + ["additionalProperties"]
-            )
+            nested_schema = schema["additionalProperties"]
+            if schema["additionalProperties"] is True:
+                nested_schema = {}
+            elif schema["additionalProperties"] is False:
+                nested_schema = None
+
+            if nested_schema is not None:
+                coverage |= coverable_parts(
+                    nested_schema,
+                    schema_keys=schema_keys + ["additionalProperties"],
+                    refs=refs,
+                )
 
     elif type_ == "array":
         if "items" in schema:
-            coverage |= coverable_parts(schema["items"], schema_keys + ["items"])
+            coverage |= coverable_parts(
+                schema["items"],
+                schema_keys=schema_keys + ["items"],
+                refs=refs,
+            )
 
     elif type_ in PRIMITIVE_TYPES_CLASSES:
         coverage.add(tuple(schema_keys))
         # TODO cover minimum, maximum, pattern, etc.
 
         if "enum" in schema:
-            coverage.add(tuple(schema_keys + ["enum"]))
+            coverage |= {
+                tuple(schema_keys + ["enum", i]) for i in range(len(schema["enum"]))
+            }
 
     else:
         raise ValueError(f"{type_} is not supported")
@@ -107,5 +144,6 @@ def cover_schema(schema, data, schema_keys=None):
         if "enum" in schema:
             if data not in schema["enum"]:
                 raise ValueError(f"{data} is not in {schema['enum']}")
+            coverage.add(tuple(schema_keys + ["enum", schema["enum"].index(data)]))
 
     return coverage

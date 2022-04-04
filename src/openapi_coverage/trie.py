@@ -5,6 +5,9 @@ class TrieNode:
     def __init__(self, value: str, children: Dict):
         self.value = value
         self.children = children or dict()
+        
+    def __repr__(self):
+        return f"TrieNode({self.value!r}, {self.children!r})"
 
 
 class Trie:
