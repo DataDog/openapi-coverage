@@ -69,8 +69,14 @@ def cover(schema_path, har_paths, report, show_stats):
 
 @cli.command()
 @click.argument("schema_paths", nargs=-1, type=click.Path(exists=True))
+@click.option(
+    "--format",
+    "-f",
+    type=click.Choice(["github", "errorformat"]),
+    default="errorformat",
+)
 @click.option("--report", "-r", type=click.Path(), default="-")
-def annotate(schema_paths, report):
+def annotate(schema_paths, format, report):
     """Annotate schemas with coverage information."""
     with open(report) as f:
         report = json.load(f)
@@ -86,6 +92,13 @@ def annotate(schema_paths, report):
                 output += f"/{p}"
         return output
 
+    formats = {
+        "github": "::error file={schema_path},line={line},col={column},"
+        "title=Coverage::Missing coverage for {missing_path}",
+        "errorformat": "{schema_path}:{line}:{column}: "
+        "[openapi-coverage] Missing coverage for {missing_path}",
+    }
+
     for schema_path in schema_paths:
         with open(schema_path) as f:
             schema = PositionLoader(f.read()).get_single_data()
@@ -100,8 +113,12 @@ def annotate(schema_paths, report):
             try:
                 value = lookup(schema, key)
                 click.echo(
-                    f"::error file={schema_path},line={value['line']},col={value['column']},"
-                    f"title=Coverage::Missing coverage for {format_path(missing)}"
+                    formats[format].format(
+                        schema_path=schema_path,
+                        line=value["line"],
+                        column=value["column"],
+                        missing_path=format_path(missing),
+                    )
                 )
             except (RuntimeError, KeyError):
                 pass
