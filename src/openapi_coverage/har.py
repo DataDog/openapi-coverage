@@ -96,7 +96,7 @@ def cover_har(schema, har, url_map=None):
                 try:
                     response_schema = lookup(operation, prefix[:2])
                     break
-                except KeyError:
+                except (KeyError, RuntimeError):
                     continue
 
             if response_schema is None:
