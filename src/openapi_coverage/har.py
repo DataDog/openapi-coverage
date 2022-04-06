@@ -100,9 +100,8 @@ def cover_har(schema, har, url_map=None):
                     continue
 
             if response_schema is None:
-                raise ValueError(
-                    "Unable to find schema for response {}".format(status_code)
-                )
+                warnings.warn(f"Unable to find response schema for {status_code} {method} {url}")
+                continue
 
             if "content" in response_schema:
                 response_schema = response_schema["content"]
