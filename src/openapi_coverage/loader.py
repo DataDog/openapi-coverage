@@ -30,7 +30,11 @@ class PositionLoader(Loader):
                 value="__position__" + key_node.value,
             )
             shadow_value_node = ScalarNode(
-                tag=BaseResolver.DEFAULT_SCALAR_TAG, value=key_node.__position__
+                tag=BaseResolver.DEFAULT_SCALAR_TAG,
+                value={
+                    "line": key_node.__position__["line"] + 1,
+                    "column": key_node.__position__["column"],
+                },
             )
             node_pair_lst_for_appending.append((shadow_key_node, shadow_value_node))
 
