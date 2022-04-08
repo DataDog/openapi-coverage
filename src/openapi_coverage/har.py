@@ -44,7 +44,7 @@ def cover_har(schema, har, url_map=None):
         operation = lookup(schema, parts)
 
         for i, parameter in enumerate(operation.get("parameters", [])):
-            schema_keys = list((*parts, "parameters", i))
+            schema_keys = list((*parts, "parameters", i, "schema"))
             if parameter["in"] == "path":
                 name = parameter["name"]
                 if name in path_parameters:
