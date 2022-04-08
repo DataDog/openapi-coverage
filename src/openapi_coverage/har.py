@@ -63,9 +63,15 @@ def cover_har(schema, har, url_map=None):
                 name = parameter["name"]
                 value = query_parameters.get(name)
                 if value is not None:
-                    coverage |= cover_schema(
-                        parameter["schema"], value, schema_keys=schema_keys
-                    )
+                    if parameter["schema"].get("type") == "array":
+                        coverage |= cover_schema(
+                            parameter["schema"], value, schema_keys=schema_keys
+                        )
+                    else:
+                        for v in value:
+                            coverage |= cover_schema(
+                                parameter["schema"], v, schema_keys=schema_keys
+                            )
             else:
                 raise ValueError("Unknown parameter type: {}".format(parameter["in"]))
 
@@ -100,7 +106,9 @@ def cover_har(schema, har, url_map=None):
                     continue
 
             if response_schema is None:
-                warnings.warn(f"Unable to find response schema for {status_code} {method} {url}")
+                warnings.warn(
+                    f"Unable to find response schema for {status_code} {method} {url}"
+                )
                 continue
 
             if "content" in response_schema:
