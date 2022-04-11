@@ -76,19 +76,27 @@ def cover_har(schema, har, url_map=None):
                 raise ValueError("Unknown parameter type: {}".format(parameter["in"]))
 
         if "requestBody" in operation:
-            prefix = [
-                "requestBody",
-                "content",
-                entry["request"]["postData"]["mimeType"],
-                "schema",
-            ]
-            data_schema = lookup(operation, prefix)
-            try:
-                data = json.loads(entry["request"]["postData"]["text"])
-                for covered in cover_schema(data_schema, data):
-                    coverage.add((*parts, *prefix, *covered))
-            except ValueError:
-                pass
+            orig_mime_type = entry["request"]["postData"]["mimeType"]
+            parsed_mime_type = parse_options_header(orig_mime_type)
+
+            for mime_type in (orig_mime_type, parsed_mime_type[0]):
+                prefix = [
+                    "requestBody",
+                    "content",
+                    mime_type,
+                    "schema",
+                ]
+                try:
+                    data_schema = lookup(operation, prefix)
+                except RuntimeError:
+                    continue
+
+                try:
+                    data = json.loads(entry["request"]["postData"]["text"])
+                    for covered in cover_schema(data_schema, data):
+                        coverage.add((*parts, *prefix, *covered))
+                except ValueError:
+                    pass
 
         if "responses" in operation:
             response = entry["response"]
