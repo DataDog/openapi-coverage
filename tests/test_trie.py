@@ -8,7 +8,7 @@ def test_build_trie():
 
     t = build_trie(coverage)
 
-    assert t.count_children(("a")) == 6
-    assert t.count_children(("a", "b")) == 3
-    assert t.count_children(("a", "g")) == 1
-    assert t.count_children(("a", "g", "h")) == 0
+    assert t.count_leafs(("a")) == 2
+    assert t.count_leafs(("a", "b")) == 1
+    assert t.count_leafs(("a", "g")) == 1
+    assert t.count_leafs(("a", "g", "h")) == 1
