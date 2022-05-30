@@ -45,8 +45,8 @@ def cover(schema_path, har_paths, report, show_stats):
 
         stats = []
         for operation in sorted({p[:3] for p in coverable}):
-            c = coverred_trie.count_children(operation)
-            ca = coverable_trie.count_children(operation)
+            c = coverred_trie.count_leafs(operation)
+            ca = coverable_trie.count_leafs(operation)
             if c > 0 and ca > 0:
                 r = 100.0 * c / ca
             else:

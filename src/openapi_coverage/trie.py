@@ -5,7 +5,7 @@ class TrieNode:
     def __init__(self, value: str, children: Dict):
         self.value = value
         self.children = children or dict()
-        
+
     def __repr__(self):
         return f"TrieNode({self.value!r}, {self.children!r})"
 
@@ -29,7 +29,7 @@ class Trie:
             current = current.children[k]
         return current
 
-    def count_children(self, path):
+    def count_leafs(self, path):
         root = self.get(path)
 
         if not root:
@@ -43,7 +43,8 @@ class Trie:
             cur = q[0]
             q.pop(0)
 
-            cnt += len(cur.children)
+            if len(cur.children) == 0:
+                cnt += 1
 
             for k, v in cur.children.items():
                 q.append(v)
