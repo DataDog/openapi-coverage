@@ -1,0 +1,5 @@
+Component,Origin,License,Copyright
+pyproject.toml,click,BSD-3-Clause,Copyright 2014 Pallets
+pyproject.toml,jsonref,MIT,Copyright (C) 2013 Chase Sterling
+pyproject.toml,pyyaml,MIT,Copyright (c) 2017-2021 Ingy döt Net Copyright (c) 2006-2016 Kirill Simonov
+pyproject.toml,werkzeug,BSD-3-Clause,Copyright 2007 Pallets
