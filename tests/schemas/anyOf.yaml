@@ -16,14 +16,14 @@ components:
   schemas:
     PetByAge:
       type: object
-      properties: 
-        age: 
+      properties:
+        age:
           type: integer
-        nickname: 
+        nickname:
           type: string
       required:
         - age
-          
+
     PetByType:
       type: object
       properties:
@@ -32,5 +32,5 @@ components:
           enum: [Cat, Dog]
         hunts:
           type: boolean
-      required: 
+      required:
         - pet_type

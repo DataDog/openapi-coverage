@@ -1,5 +1,6 @@
 """Rewrite paths using JSON-refs."""
 
+
 def get_ref(schema):
     """Get JSON-ref from the schema."""
     if hasattr(schema, "__reference__"):
