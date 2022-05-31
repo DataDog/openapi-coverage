@@ -41,7 +41,8 @@ def coverable_paths(schema):
                 for content_type, body in operation["requestBody"]["content"].items():
                     coverage |= coverable_parts(
                         body["schema"],
-                        schema_keys=prefix + ["requestBody", "content", content_type, "schema"],
+                        schema_keys=prefix
+                        + ["requestBody", "content", content_type, "schema"],
                         refs=refs,
                     )
 
@@ -49,7 +50,8 @@ def coverable_paths(schema):
                 for content_type, content in response.get("content", {}).items():
                     coverage |= coverable_parts(
                         content["schema"],
-                        schema_keys=prefix + ["responses", status_code, "content", content_type, "schema"],
+                        schema_keys=prefix
+                        + ["responses", status_code, "content", content_type, "schema"],
                         refs=refs,
                     )
 

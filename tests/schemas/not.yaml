@@ -11,7 +11,7 @@ paths:
         '200':
           description: Updated
 components:
-  schemas:          
+  schemas:
     PetByType:
       type: object
       properties:

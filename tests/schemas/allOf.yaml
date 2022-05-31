@@ -26,7 +26,7 @@ components:
       discriminator:
         propertyName: pet_type
     Dog:     # "Dog" is a value for the pet_type property (the discriminator value)
-      allOf: # Combines the main `Pet` schema with `Dog`-specific properties 
+      allOf: # Combines the main `Pet` schema with `Dog`-specific properties
         - $ref: '#/components/schemas/Pet'
         - type: object
           # all other properties specific to a `Dog`
@@ -37,7 +37,7 @@ components:
               type: string
               enum: [Dingo, Husky, Retriever, Shepherd]
     Cat:     # "Cat" is a value for the pet_type property (the discriminator value)
-      allOf: # Combines the main `Pet` schema with `Cat`-specific properties 
+      allOf: # Combines the main `Pet` schema with `Cat`-specific properties
         - $ref: '#/components/schemas/Pet'
         - type: object
           # all other properties specific to a `Cat`
