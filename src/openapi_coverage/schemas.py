@@ -80,7 +80,7 @@ def coverable_parts(schema, schema_keys=None, refs=None):
 
         if "enum" in schema:
             coverage |= {
-                tuple(schema_keys + ["enum", i]) for i in range(len(schema["enum"]))
+                tuple(schema_keys + ["enum"])
             }
 
     else:
