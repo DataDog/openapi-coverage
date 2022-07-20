@@ -79,9 +79,7 @@ def coverable_parts(schema, schema_keys=None, refs=None):
         # TODO cover minimum, maximum, pattern, etc.
 
         if "enum" in schema:
-            coverage |= {
-                tuple(schema_keys + ["enum", i]) for i in range(len(schema["enum"]))
-            }
+            coverage |= {tuple(schema_keys + ["enum"])}
 
     else:
         raise ValueError(f"{type_} is not supported")
