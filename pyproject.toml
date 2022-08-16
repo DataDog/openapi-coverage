@@ -7,7 +7,7 @@ authors = [
     { name = "Datadog, Inc.", email = "dev@datadoghq.com" },
 ]
 classifiers = [
-  "License :: OSI Approved :: Apache-2.0 License",
+  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python :: 3",
 ]
 dependencies = ["click", "jsonref", "pyyaml", "werkzeug"]
