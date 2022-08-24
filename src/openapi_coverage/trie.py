@@ -9,6 +9,9 @@ class TrieNode:
     def __repr__(self):
         return f"TrieNode({self.value!r}, {self.children!r})"
 
+    def get_value(self):
+        return self.value
+
 
 class Trie:
     def __init__(self):
@@ -16,6 +19,11 @@ class Trie:
 
     def insert(self, path):
         current = self.root
+
+        # split "api/v1/some_api" into "api", "v1", "some_api"
+        if path[0] == "paths":
+            path = path[:1] + tuple(path[1].split("/")[1:]) + path[2:]
+
         for k in path:
             if k not in current.children:
                 current.children[k] = TrieNode(k, None)
@@ -29,8 +37,11 @@ class Trie:
             current = current.children[k]
         return current
 
-    def count_leafs(self, path):
-        root = self.get(path)
+    def count_leafs(self, path=None):
+        if path:
+            root = self.get(path)
+        else:
+            root = self.root
 
         if not root:
             return -1
