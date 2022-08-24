@@ -24,7 +24,8 @@ def cli():
 @click.argument("har_paths", nargs=-1, type=click.Path(exists=True))
 @click.option("--report", "-r", type=click.File(mode="w"), default="-")
 @click.option("--stats/--no-stats", "show_stats", default=False)
-def cover(schema_path, har_paths, report, show_stats):
+@click.option("--group-by", "group_by", default="/")
+def cover(schema_path, har_paths, report, show_stats, group_by):
     with open(schema_path) as f:
         schema = JsonRef.replace_refs(yaml.load(f, Loader=CSafeLoader))
 
@@ -38,6 +39,29 @@ def cover(schema_path, har_paths, report, show_stats):
         }
 
     coverable = {replace_refs(schema, c) for c in coverable_paths(schema)}
+
+    if group_by:
+        paths = group_by.split("/")
+        coverable_trie = build_trie(coverable)
+        coverred_trie = build_trie(coverred)
+
+        print(f"Group by {group_by}")
+        ca = coverable_trie.count_leafs(paths)
+
+        stats = []
+        for k, child in coverable_trie.get(paths).children.items():
+            c = coverred_trie.count_leafs(paths + [k])
+            if c > 0 and ca > 0:
+                r = 100.0 * c / ca
+            else:
+                r = 0
+            stats.append((r, child.get_value()))
+
+        stats.sort(reverse=True)
+        for r, group in stats:
+            click.echo(f"{r:>6.2f}% - {group}")
+
+        return
 
     if show_stats:
         coverable_trie = build_trie(coverable)
