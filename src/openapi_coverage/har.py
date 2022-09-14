@@ -149,6 +149,5 @@ def cover_har(schema, har, url_map=None):
                     warnings.warn(
                         f"Unable to find schema for content type {content_type} - known types: {response_schema.keys()} in {method} {url}"
                     )
-    #import pdb; pdb.set_trace()
 
     return coverage
