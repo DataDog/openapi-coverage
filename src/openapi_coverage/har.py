@@ -42,6 +42,7 @@ def cover_har(schema, har, url_map=None):
         query_parameters = parse_qs(parsed_url.query)
         request_headers = _build_header_map(entry["request"]["headers"])
         operation = lookup(schema, parts)
+        coverage.add(tuple(parts))
 
         for i, parameter in enumerate(operation.get("parameters", [])):
             schema_keys = list((*parts, "parameters", i, "schema"))
@@ -148,5 +149,6 @@ def cover_har(schema, har, url_map=None):
                     warnings.warn(
                         f"Unable to find schema for content type {content_type} - known types: {response_schema.keys()} in {method} {url}"
                     )
+    #import pdb; pdb.set_trace()
 
     return coverage
