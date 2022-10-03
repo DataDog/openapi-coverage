@@ -2,7 +2,7 @@
 
 from werkzeug.routing import Map, Rule
 
-from openapi_coverage.schemas import coverable_parts
+from .schemas import coverable_parts
 
 
 def build_url_map(schema):
@@ -30,6 +30,7 @@ def coverable_paths(schema):
     for path, operations in schema.get("paths", {}).items():
         for method, operation in operations.items():
             prefix = ["paths", path, method]
+            coverage.add(tuple(prefix))
             for i, parameter in enumerate(operation.get("parameters", [])):
                 coverage |= coverable_parts(
                     parameter["schema"],

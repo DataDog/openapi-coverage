@@ -21,13 +21,14 @@ def coverable_parts(schema, schema_keys=None, refs=None):
         if ref is not None:
             if ref in refs:
                 return coverage
-                # return {tuple(schema_keys)}
             refs.add(ref)
 
     schema_keys = schema_keys or []
     type_ = schema.get("type", "object")
 
     if type_ == "object":
+        if schema_keys:
+            coverage.add(tuple(schema_keys))
         if "properties" in schema:
             for k in schema["properties"]:
                 coverage |= coverable_parts(
@@ -99,6 +100,8 @@ def cover_schema(schema, data, schema_keys=None):
             coverage.add(tuple(schema_keys))
 
     elif type_ == "object":
+        if schema_keys:
+            coverage.add(tuple(schema_keys))
         if "properties" in schema:
             for k in schema["properties"]:
                 if data and k in data:

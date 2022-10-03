@@ -82,7 +82,9 @@ def test_schemas(load_yaml, load_json, dereference):
 
     result = cover_schema(schema["components"]["schemas"]["Dog"], dog)
     assert result == {
+        ("allOf", 0),
         ("allOf", 0, "properties", "pet_type"),
+        ("allOf", 1),
         ("allOf", 1, "properties", "bark"),
     }
 
@@ -117,12 +119,15 @@ def test_replace_refs(load_yaml, dereference):
         )
     }
     assert result == {
+        ("components", "schemas", "Dog"),
+        ("components", "schemas", "Dog", "allOf", 1),
         ("components", "schemas", "Dog", "allOf", 1, "properties", "bark"),
         ("components", "schemas", "Dog", "allOf", 1, "properties", "breed"),
+        ("components", "schemas", "Pet"),
         ("components", "schemas", "Pet", "properties", "pet_type"),  # from allOf $ref
     }
 
 
 def test_coverable_paths(load_yaml, dereference):
     schema = dereference(load_yaml("schemas/petstore.yaml"))
-    assert 7 == len(coverable_paths(schema))
+    assert 12 == len(coverable_paths(schema))
