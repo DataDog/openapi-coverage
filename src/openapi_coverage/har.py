@@ -141,12 +141,17 @@ def cover_har(schema, har, url_map=None):
                     response_schema = response_schema[matched_content_type]["schema"]
                     prefix += ["content", matched_content_type, "schema"]
 
+                    covered = None
                     try:
                         data = json.loads(response["content"]["text"])
                         for covered in cover_schema(response_schema, data):
                             coverage.add((*parts, *prefix, *covered))
                     except ValueError:
                         pass
+
+                    if covered:
+                        coverage.add((*parts, *prefix))
+
                 else:
                     warnings.warn(
                         f"Unable to find schema for content type {content_type} - known types: {response_schema.keys()} in {method} {url}"

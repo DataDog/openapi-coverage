@@ -7,7 +7,7 @@ from yaml import CSafeLoader
 
 from .har import cover_har, load_har
 from .loader import PositionLoader
-from .lookup import lookup
+from .lookup import lookup, lookup_endline
 from .paths import build_url_map, coverable_paths
 from .refs import replace_refs
 from .trie import build_trie
@@ -122,6 +122,42 @@ def annotate(schema_paths, format, report):
                 )
             except (RuntimeError, KeyError):
                 pass
+
+
+@cli.command()
+@click.argument("schema_paths", nargs=-1, type=click.Path(exists=True))
+@click.option("--report", "-r", type=click.Path(), default="-")
+@click.option("--summary", "-s", type=click.File(mode="w"), default="-")
+def line_list(schema_paths, report, summary):
+    with open(report) as f:
+        report = json.load(f)
+
+    missing_paths = report.get("missing", [])
+    result = {}
+    for schema_path in schema_paths:
+        with open(schema_path) as f:
+            total_lines = 0
+            for line in f.readlines():
+                total_lines += 1
+            f.seek(0)
+            schema = PositionLoader(f).get_single_data()
+
+        result[schema_path] = set()
+
+        for missing in missing_paths:
+            key = [elt * 2 + 1 if isinstance(elt, int) else elt for elt in missing]
+            if isinstance(key[-1], str):
+                key[-1] = f"__position__{key[-1]}"
+            try:
+                value = lookup(schema, key)
+            except (RuntimeError, KeyError):
+                pass
+            else:
+                endline = lookup_endline(schema, missing, total_lines)
+                result[schema_path].update(range(value["line"], endline + 1))
+        result[schema_path] = list(result[schema_path])
+        result[schema_path].sort()
+    json.dump(result, summary, indent=2)
 
 
 if __name__ == "__main__":
