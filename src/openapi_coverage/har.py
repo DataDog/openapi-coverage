@@ -94,12 +94,15 @@ def cover_har(schema, har, url_map=None):
                     except RuntimeError:
                         continue
 
+                    covered = None
                     try:
                         data = json.loads(post_data["text"])
                         for covered in cover_schema(data_schema, data):
                             coverage.add((*parts, *prefix, *covered))
                     except ValueError:
                         pass
+                    if covered:
+                        coverage.add((*parts, *prefix))
 
         if "responses" in operation:
             response = entry["response"]
