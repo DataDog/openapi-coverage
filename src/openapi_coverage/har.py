@@ -108,6 +108,8 @@ def cover_har(schema, har, url_map=None):
             response = entry["response"]
             status_code = str(response["status"])
             content_type = response["content"]["mimeType"]
+            if content_type == "application/vnd.api+json":
+                content_type = "application/json"
             variants = [status_code, status_code[0] + "xx", "default"]
             response_schema = None
 
@@ -156,6 +158,7 @@ def cover_har(schema, har, url_map=None):
                         coverage.add((*parts, *prefix))
 
                 else:
+                    import pdb; pdb.set_trace()
                     warnings.warn(
                         f"Unable to find schema for content type {content_type} - known types: {response_schema.keys()} in {method} {url}"
                     )
