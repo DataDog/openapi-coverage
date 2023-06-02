@@ -145,15 +145,18 @@ def line_list(schema_paths, report, summary):
         result[schema_path] = set()
 
         for missing in missing_paths:
-            key = [elt * 2 + 1 if isinstance(elt, int) else elt for elt in missing]
+            key = [elt * 2 if isinstance(elt, int) else elt for elt in missing]
+            original_key = key.copy()
             if isinstance(key[-1], str):
                 key[-1] = f"__position__{key[-1]}"
+            else:
+                key[-1] += 1
             try:
                 value = lookup(schema, key)
             except (RuntimeError, KeyError):
                 pass
             else:
-                endline = lookup_endline(schema, missing, total_lines)
+                endline = lookup_endline(schema, original_key, total_lines)
                 result[schema_path].update(range(value["line"], endline + 1))
         result[schema_path] = list(result[schema_path])
         result[schema_path].sort()
