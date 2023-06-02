@@ -21,17 +21,19 @@ def lookup_endline(schema, path, fallback=0):
     elif path_length == 1:
         position = schema[f"__position__{path[0]}"]["line"]
     else:
-        for item in path[:-2]:
+        for item in path[:-1]:
             schema = schema[item]
         if isinstance(path[-1], int):
-            position = schema[path[-2]][path[-1] + 1]["line"]
+            position = schema[path[-1] + 1]["line"]
         else:
-            position = schema[path[-2]][f"__position__{path[-1]}"]["line"]
-        if not isinstance(schema[path[-2]], list):
-            schema = schema[path[-2]]
+            position = schema[f"__position__{path[-1]}"]["line"]
 
-    next_items = [value["line"] for key, value in schema.items()
-                  if key.startswith("__position__") and value["line"] > position]
+    if isinstance(schema, list):
+        next_items = [value["line"] for value in schema
+                      if "line" in value and value["line"] > position]
+    else:
+        next_items = [value["line"] for key, value in schema.items()
+                      if key.startswith("__position__") and value["line"] > position]
     if not next_items:
         return lookup_endline(original_schema, path[:-1], fallback)
 

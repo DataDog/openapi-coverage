@@ -42,9 +42,11 @@ class PositionLoader(Loader):
         values = []
         for value in node.value:
             values.append(value)
+            position = value.__position__.copy()
+            position["line"] += 1
             values.append(
                 ScalarNode(
-                    tag=BaseResolver.DEFAULT_SCALAR_TAG, value=value.__position__
+                    tag=BaseResolver.DEFAULT_SCALAR_TAG, value=position
                 )
             )
         node.value = values
