@@ -80,7 +80,8 @@ def coverable_parts(schema, schema_keys=None, refs=None):
         # TODO cover minimum, maximum, pattern, etc.
 
         if "enum" in schema:
-            coverage |= {tuple(schema_keys + ["enum"])}
+            for index in range(len(schema["enum"])):
+                coverage |= {tuple(schema_keys + ["enum", index])}
 
     else:
         raise ValueError(f"{type_} is not supported")
@@ -98,6 +99,10 @@ def cover_schema(schema, data, schema_keys=None):
     if type_ in PRIMITIVE_TYPES_CLASSES:
         if type(data) == PRIMITIVE_TYPES_CLASSES[type_]:
             coverage.add(tuple(schema_keys))
+        if "enum" in schema:
+            if data not in schema["enum"]:
+                raise ValueError(f"{data} is not in {schema['enum']}")
+            coverage.add(tuple(schema_keys + ["enum", schema["enum"].index(data)]))
 
     elif type_ == "object":
         if schema_keys:
@@ -138,13 +143,5 @@ def cover_schema(schema, data, schema_keys=None):
                     coverage |= cover_schema(
                         schema["items"], d, schema_keys + ["items"]
                     )
-
-    else:
-        # TODO cover minimum, maximum, pattern, etc.
-
-        if "enum" in schema:
-            if data not in schema["enum"]:
-                raise ValueError(f"{data} is not in {schema['enum']}")
-            coverage.add(tuple(schema_keys + ["enum", schema["enum"].index(data)]))
 
     return coverage

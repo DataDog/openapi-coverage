@@ -107,7 +107,7 @@ def test_replace_refs(load_yaml, dereference):
     dog = {
         "pet_type": "Dog",
         "bark": True,
-        "breed": "Labrador",
+        "breed": "Shepherd",
     }
 
     result = {
@@ -123,6 +123,7 @@ def test_replace_refs(load_yaml, dereference):
         ("components", "schemas", "Dog", "allOf", 1),
         ("components", "schemas", "Dog", "allOf", 1, "properties", "bark"),
         ("components", "schemas", "Dog", "allOf", 1, "properties", "breed"),
+        ("components", "schemas", "Dog", "allOf", 1, "properties", "breed", "enum", 3),
         ("components", "schemas", "Pet"),
         ("components", "schemas", "Pet", "properties", "pet_type"),  # from allOf $ref
     }
