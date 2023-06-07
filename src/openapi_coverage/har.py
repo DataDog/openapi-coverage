@@ -53,6 +53,7 @@ def cover_har(schema, har, url_map=None):
                     coverage |= cover_schema(
                         parameter["schema"], value, schema_keys=schema_keys
                     )
+                    coverage.add((*parts, "parameters", i))
             elif parameter["in"] == "header":
                 name = parameter["name"]
                 value = request_headers.get(name)
@@ -60,6 +61,7 @@ def cover_har(schema, har, url_map=None):
                     coverage |= cover_schema(
                         parameter["schema"], value, schema_keys=schema_keys
                     )
+                    coverage.add((*parts, "parameters", i))
             elif parameter["in"] == "query":
                 name = parameter["name"]
                 value = query_parameters.get(name)
@@ -73,6 +75,7 @@ def cover_har(schema, har, url_map=None):
                             coverage |= cover_schema(
                                 parameter["schema"], v, schema_keys=schema_keys
                             )
+                    coverage.add((*parts, "parameters", i))
             else:
                 raise ValueError("Unknown parameter type: {}".format(parameter["in"]))
 

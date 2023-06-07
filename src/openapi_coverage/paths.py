@@ -37,6 +37,7 @@ def coverable_paths(schema):
                     schema_keys=prefix + ["parameters", i, "schema"],
                     refs=refs,
                 )
+                coverage.add((*prefix, "parameters", i))
 
             if "requestBody" in operation and "content" in operation["requestBody"]:
                 for content_type, body in operation["requestBody"]["content"].items():
