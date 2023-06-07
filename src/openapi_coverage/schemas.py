@@ -4,10 +4,10 @@ from __future__ import nested_scopes
 from .refs import get_ref
 
 PRIMITIVE_TYPES_CLASSES = {
-    "integer": type(1),
-    "number": type(1.0),
-    "boolean": type(True),
-    "string": type("hello"),
+    "integer": int,
+    "number": (int, float),
+    "boolean": bool,
+    "string": str,
 }
 
 
@@ -97,7 +97,7 @@ def cover_schema(schema, data, schema_keys=None):
     coverage = set()
 
     if type_ in PRIMITIVE_TYPES_CLASSES:
-        if type(data) == PRIMITIVE_TYPES_CLASSES[type_]:
+        if isinstance(data, PRIMITIVE_TYPES_CLASSES[type_]):
             coverage.add(tuple(schema_keys))
         if "enum" in schema:
             if data not in schema["enum"]:
