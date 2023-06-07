@@ -42,7 +42,6 @@ def cover_har(schema, har, url_map=None):
         query_parameters = parse_qs(parsed_url.query)
         request_headers = _build_header_map(entry["request"]["headers"])
         operation = lookup(schema, parts)
-        coverage.add(tuple(parts))
 
         for i, parameter in enumerate(operation.get("parameters", [])):
             schema_keys = list((*parts, "parameters", i, "schema"))
@@ -129,6 +128,8 @@ def cover_har(schema, har, url_map=None):
                     f"Unable to find response schema for {status_code} {method} {url}"
                 )
                 continue
+
+            coverage.add((*parts, "responses", status_code))
 
             if "content" in response_schema:
                 response_schema = response_schema["content"]
