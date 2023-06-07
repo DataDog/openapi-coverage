@@ -33,9 +33,7 @@ def cover(schema_path, har_paths, report, show_stats):
 
     for har_path in har_paths:
         har = load_har(har_path)
-        coverred |= {
-            replace_refs(schema, c) for c in cover_har(schema, har, url_map=url_map)
-        }
+        coverred |= {replace_refs(schema, c) for c in cover_har(schema, har, url_map=url_map)}
 
     coverable = {replace_refs(schema, c) for c in coverable_paths(schema)}
 
@@ -95,8 +93,7 @@ def annotate(schema_paths, format, report):
     formats = {
         "github": "::error file={schema_path},line={line},col={column},"
         "title=Coverage::Missing coverage for {missing_path}",
-        "errorformat": "{schema_path}:{line}:{column}: "
-        "[openapi-coverage] Missing coverage for {missing_path}",
+        "errorformat": "{schema_path}:{line}:{column}: [openapi-coverage] Missing coverage for {missing_path}",
     }
 
     for schema_path in schema_paths:
@@ -106,9 +103,7 @@ def annotate(schema_paths, format, report):
         for missing in missing_paths:
             key = (
                 *missing[:-1],
-                missing[-1] * 2 + 1
-                if isinstance(missing[-1], int)
-                else "__position__" + str(missing[-1]),
+                missing[-1] * 2 + 1 if isinstance(missing[-1], int) else "__position__" + str(missing[-1]),
             )
             try:
                 value = lookup(schema, key)

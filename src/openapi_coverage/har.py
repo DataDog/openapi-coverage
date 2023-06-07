@@ -32,9 +32,7 @@ def cover_har(schema, har, url_map=None):
 
         parsed_url = urlparse(url)
         try:
-            parts, path_parameters = url_map.bind(parsed_url.hostname).match(
-                parsed_url.path, method=method
-            )
+            parts, path_parameters = url_map.bind(parsed_url.hostname).match(parsed_url.path, method=method)
         except NotFound:
             warnings.warn(f"Unable to match {url}")
             continue
@@ -49,31 +47,23 @@ def cover_har(schema, har, url_map=None):
                 name = parameter["name"]
                 if name in path_parameters:
                     value = path_parameters[name]
-                    coverage |= cover_schema(
-                        parameter["schema"], value, schema_keys=schema_keys
-                    )
+                    coverage |= cover_schema(parameter["schema"], value, schema_keys=schema_keys)
                     coverage.add((*parts, "parameters", i))
             elif parameter["in"] == "header":
                 name = parameter["name"]
                 value = request_headers.get(name)
                 if value is not None:
-                    coverage |= cover_schema(
-                        parameter["schema"], value, schema_keys=schema_keys
-                    )
+                    coverage |= cover_schema(parameter["schema"], value, schema_keys=schema_keys)
                     coverage.add((*parts, "parameters", i))
             elif parameter["in"] == "query":
                 name = parameter["name"]
                 value = query_parameters.get(name)
                 if value is not None:
                     if parameter["schema"].get("type") == "array":
-                        coverage |= cover_schema(
-                            parameter["schema"], value, schema_keys=schema_keys
-                        )
+                        coverage |= cover_schema(parameter["schema"], value, schema_keys=schema_keys)
                     else:
                         for v in value:
-                            coverage |= cover_schema(
-                                parameter["schema"], v, schema_keys=schema_keys
-                            )
+                            coverage |= cover_schema(parameter["schema"], v, schema_keys=schema_keys)
                     coverage.add((*parts, "parameters", i))
             else:
                 raise ValueError("Unknown parameter type: {}".format(parameter["in"]))
@@ -124,9 +114,7 @@ def cover_har(schema, har, url_map=None):
                     continue
 
             if response_schema is None:
-                warnings.warn(
-                    f"Unable to find response schema for {status_code} {method} {url}"
-                )
+                warnings.warn(f"Unable to find response schema for {status_code} {method} {url}")
                 continue
 
             coverage.add((*parts, "responses", status_code))
@@ -136,13 +124,8 @@ def cover_har(schema, har, url_map=None):
                 parsed_content_type = parse_options_header(content_type)
                 matched_content_type = None
                 for schema_content_type in response_schema:
-                    parsed_schema_content_type = parse_options_header(
-                        schema_content_type
-                    )
-                    if (
-                        schema_content_type == "*/*"
-                        or parsed_schema_content_type[0] == parsed_content_type[0]
-                    ):
+                    parsed_schema_content_type = parse_options_header(schema_content_type)
+                    if schema_content_type == "*/*" or parsed_schema_content_type[0] == parsed_content_type[0]:
                         matched_content_type = schema_content_type
                         break
 

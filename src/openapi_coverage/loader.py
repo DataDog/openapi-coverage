@@ -44,10 +44,6 @@ class PositionLoader(Loader):
             values.append(value)
             position = value.__position__.copy()
             position["line"] += 1
-            values.append(
-                ScalarNode(
-                    tag=BaseResolver.DEFAULT_SCALAR_TAG, value=position
-                )
-            )
+            values.append(ScalarNode(tag=BaseResolver.DEFAULT_SCALAR_TAG, value=position))
         node.value = values
         return Constructor.construct_sequence(self, node, deep=deep)

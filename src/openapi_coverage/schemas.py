@@ -140,8 +140,6 @@ def cover_schema(schema, data, schema_keys=None):
         if "items" in schema:
             if data:
                 for i, d in enumerate(data):
-                    coverage |= cover_schema(
-                        schema["items"], d, schema_keys + ["items"]
-                    )
+                    coverage |= cover_schema(schema["items"], d, schema_keys + ["items"])
 
     return coverage
