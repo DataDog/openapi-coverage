@@ -30,29 +30,28 @@ def coverable_paths(schema):
     for path, operations in schema.get("paths", {}).items():
         for method, operation in operations.items():
             prefix = ["paths", path, method]
-            coverage.add(tuple(prefix))
             for i, parameter in enumerate(operation.get("parameters", [])):
                 coverage |= coverable_parts(
                     parameter["schema"],
                     schema_keys=prefix + ["parameters", i, "schema"],
                     refs=refs,
                 )
+                coverage.add((*prefix, "parameters", i))
 
             if "requestBody" in operation and "content" in operation["requestBody"]:
                 for content_type, body in operation["requestBody"]["content"].items():
                     coverage |= coverable_parts(
                         body["schema"],
-                        schema_keys=prefix
-                        + ["requestBody", "content", content_type, "schema"],
+                        schema_keys=prefix + ["requestBody", "content", content_type, "schema"],
                         refs=refs,
                     )
 
             for status_code, response in operation.get("responses", {}).items():
+                coverage.add((*prefix, "responses", status_code))
                 for content_type, content in response.get("content", {}).items():
                     coverage |= coverable_parts(
                         content["schema"],
-                        schema_keys=prefix
-                        + ["responses", status_code, "content", content_type, "schema"],
+                        schema_keys=prefix + ["responses", status_code, "content", content_type, "schema"],
                         refs=refs,
                     )
 

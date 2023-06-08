@@ -1,6 +1,5 @@
 """Load YAML file."""
 
-from yaml.composer import Composer
 from yaml.constructor import Constructor
 from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
@@ -9,9 +8,6 @@ from yaml import Loader
 
 class PositionLoader(Loader):
     """Load YAML file."""
-
-    def __init__(self, stream):
-        super().__init__(stream)
 
     def compose_node(self, parent, index):
         line = self.line
@@ -46,10 +42,8 @@ class PositionLoader(Loader):
         values = []
         for value in node.value:
             values.append(value)
-            values.append(
-                ScalarNode(
-                    tag=BaseResolver.DEFAULT_SCALAR_TAG, value=value.__position__
-                )
-            )
+            position = value.__position__.copy()
+            position["line"] += 1
+            values.append(ScalarNode(tag=BaseResolver.DEFAULT_SCALAR_TAG, value=position))
         node.value = values
         return Constructor.construct_sequence(self, node, deep=deep)
