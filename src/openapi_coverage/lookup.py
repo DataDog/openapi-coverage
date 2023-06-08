@@ -29,7 +29,7 @@ def lookup_endline(schema, path, fallback=0):
             position = schema[f"__position__{path[-1]}"]["line"]
 
     if isinstance(schema, list):
-        next_items = [value["line"] for value in schema if "line" in value and value["line"] > position]
+        next_items = [value["line"] for value in schema if isinstance(value, dict) and "line" in value and value["line"] > position]
     else:
         next_items = [
             value["line"]
