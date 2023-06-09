@@ -123,12 +123,14 @@ def annotate(schema_paths, format, report):
 @click.argument("schema_paths", nargs=-1, type=click.Path(exists=True))
 @click.option("--report", "-r", type=click.Path(), default="-")
 @click.option("--summary", "-s", type=click.File(mode="w"), default="-")
-def line_list(schema_paths, report, summary):
+@click.option("--summary_percents", "-p", type=click.File(mode="w"), default="-")
+def line_list(schema_paths, report, summary, summary_percents):
     with open(report) as f:
         report = json.load(f)
 
     missing_paths = report.get("missing", [])
     result = {}
+    result_percents = {}
     for schema_path in schema_paths:
         with open(schema_path) as f:
             total_lines = 0
@@ -155,7 +157,9 @@ def line_list(schema_paths, report, summary):
                 result[schema_path].update(range(value["line"], endline + 1))
         result[schema_path] = list(result[schema_path])
         result[schema_path].sort()
+        result_percents[schema_path] = round((total_lines - len(result[schema_path])) / total_lines, 3)
     json.dump(result, summary, indent=2)
+    json.dump(result_percents, summary_percents, indent=2)
 
 
 if __name__ == "__main__":
