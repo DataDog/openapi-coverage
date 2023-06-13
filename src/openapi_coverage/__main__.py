@@ -133,9 +133,7 @@ def line_list(schema_paths, report, summary, summary_percents):
     result_percents = {}
     for schema_path in schema_paths:
         with open(schema_path) as f:
-            total_lines = 0
-            for line in f.readlines():
-                total_lines += 1
+            total_lines = len(f.readlines())
             f.seek(0)
             schema = PositionLoader(f).get_single_data()
 
