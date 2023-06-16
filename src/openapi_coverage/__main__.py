@@ -129,11 +129,10 @@ def line_list(schema_paths, report, summary):
 
     missing_paths = report.get("missing", [])
     result = {}
+    result_percents = {}
     for schema_path in schema_paths:
         with open(schema_path) as f:
-            total_lines = 0
-            for line in f.readlines():
-                total_lines += 1
+            total_lines = len(f.readlines())
             f.seek(0)
             schema = PositionLoader(f).get_single_data()
 
@@ -155,6 +154,8 @@ def line_list(schema_paths, report, summary):
                 result[schema_path].update(range(value["line"], endline + 1))
         result[schema_path] = list(result[schema_path])
         result[schema_path].sort()
+        result_percents[schema_path] = round((total_lines - len(result[schema_path])) / total_lines, 3)
+    result["percentage_summary"] = result_percents
     json.dump(result, summary, indent=2)
 
 
