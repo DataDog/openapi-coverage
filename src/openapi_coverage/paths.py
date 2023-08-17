@@ -30,6 +30,7 @@ def coverable_paths(schema):
     for path, operations in schema.get("paths", {}).items():
         for method, operation in operations.items():
             prefix = ["paths", path, method]
+            coverage.add(tuple(prefix))
             for i, parameter in enumerate(operation.get("parameters", [])):
                 coverage |= coverable_parts(
                     parameter["schema"],
