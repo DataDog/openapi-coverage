@@ -21,6 +21,23 @@ def _build_header_map(headers):
     return {header["name"]: header["value"] for header in headers}
 
 
+def _process_query_params(param, value):
+    if param["schema"].get("type") == "array":
+        style = param["schema"].get("style", "form")
+        try:
+            delimiter = {
+                "form": ",",
+                "spaceDelimited": " ",
+                "pipeDelimited": "|",
+            }[style]
+
+            if len(value) == 1:
+                return value[0].split(delimiter)
+        except KeyError as e:
+            warnings.warn(f"Invalid query style: {style}")
+    return value
+
+
 def cover_har(schema, har, url_map=None):
     """Calculate coverage for a HAR file."""
     url_map = url_map or build_url_map(schema)
@@ -60,6 +77,7 @@ def cover_har(schema, har, url_map=None):
                 value = query_parameters.get(name)
                 if value is not None:
                     if parameter["schema"].get("type") == "array":
+                        value = _process_query_params(parameter, value)
                         coverage |= cover_schema(parameter["schema"], value, schema_keys=schema_keys)
                     else:
                         for v in value:
