@@ -127,11 +127,15 @@ def cover_schema(schema, data, schema_keys=None):
             for i, s in enumerate(schema["allOf"]):
                 coverage |= cover_schema(s, data, schema_keys + ["allOf", i])
 
-        if "additionalProperties" in schema and data is not None:
+        if "additionalProperties" in schema and schema["additionalProperties"] is not False and data is not None:
+            additionalPropertiesSchema = schema["additionalProperties"]
+            if isinstance(additionalPropertiesSchema, bool) and additionalPropertiesSchema == True:
+                additionalPropertiesSchema = {}
+
             for k in data:
                 if k not in schema.get("properties", {}):
                     coverage |= cover_schema(
-                        schema["additionalProperties"],
+                        additionalPropertiesSchema,
                         data[k],
                         schema_keys + ["additionalProperties"],
                     )
