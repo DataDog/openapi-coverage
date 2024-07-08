@@ -31,6 +31,8 @@ def coverable_paths(schema):
     coverage = set()
 
     for path, operations in schema.get("paths", {}).items():
+        if path.startswith("x-"):
+            continue
         for method, operation in operations.items():
             prefix = ["paths", path, method]
             coverage.add(tuple(prefix))
