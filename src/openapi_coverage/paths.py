@@ -9,6 +9,9 @@ def build_url_map(schema):
     """Build a map of URL to schema."""
     rules = []
     for path, operations in schema.get("paths", {}).items():
+        if path.startswith("x-"):
+            # Skip extensions
+            continue
         for method, operation in operations.items():
             rules.append(
                 Rule(
