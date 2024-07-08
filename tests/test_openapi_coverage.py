@@ -102,6 +102,12 @@ def test_url_map(load_yaml, dereference):
     )
 
 
+def test_url_map_extensions(load_yaml, dereference):
+    schema = dereference(load_yaml("schemas/extensions.yaml"))
+    # Verify that this doesn't crash.
+    build_url_map(schema)
+
+
 def test_replace_refs(load_yaml, dereference):
     schema = dereference(load_yaml("schemas/allOf.yaml"))
     dog = {
