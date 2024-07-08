@@ -138,3 +138,8 @@ def test_replace_refs(load_yaml, dereference):
 def test_coverable_paths(load_yaml, dereference):
     schema = dereference(load_yaml("schemas/petstore.yaml"))
     assert 20 == len(coverable_paths(schema))
+
+
+def test_coverable_paths_with_extensions(load_yaml, dereference):
+    schema = dereference(load_yaml("schemas/extensions.yaml"))
+    assert 0 == len(coverable_paths(schema))
